@@ -1,0 +1,139 @@
+{
+  "name": "checkpoint1_brenda_diazmrcaich",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=[Prompt de prueba]",
+        "options": {
+          "systemMessage": "### ROL ###\nSos un asistente administrativo corporativo.\n### ÁMBITO ###\n[Completar: área y procesos que cubre]\n### OBJETIVO ###\n[Completar: objetivo de la sesión]\n### REGLAS ###\n- No inventar datos.\n- Usar la herramienta de Gmail solo cuando el usuario pida enviar un correo.\n- Si falta información, pedirla antes de actuar.",
+          "maxIterations": 8
+        }
+      },
+      "id": "a2",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a3",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        180,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Usar esta herramienta ÚNICAMENTE cuando el usuario pida explícitamente enviar un correo electrónico a un cliente o colega. [Completar: casos de negocio exactos en los que debe activarse y en cuáles NO]"
+      },
+      "id": "a4",
+      "name": "Gmail Tool",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        380,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "otherOptions": {}
+      },
+      "id": "a5",
+      "name": "Slack - Log de observabilidad",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Checkpoint 1 - En construcción\nEstructura base del agente. Faltan credenciales y prueba de ejecución."
+      },
+      "id": "a6",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -220
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Slack - Log de observabilidad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}
